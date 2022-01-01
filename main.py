@@ -66,15 +66,6 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[models
     db_user = crud.get_user_by_email(db, email)
     if db_user is None:
         return None
-    print("---------------------------------")
-    print(db_user.email)
-    print(db_user.hashed_password)
-    print("---------------------------------")
-    print("---------------------------------")
-    print(email)
-    print(password)
-    print(hashed_password)
-    print("---------------------------------")
     if not auth.verify_password(password, db_user.hashed_password):
         return None
     return db_user
