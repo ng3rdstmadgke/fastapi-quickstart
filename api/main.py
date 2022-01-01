@@ -1,31 +1,15 @@
-from typing import List, Optional
-from datetime import timedelta
+from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException, status
-from database import SessionLocal, engine
-from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt, JWTError
+from fastapi import Depends, FastAPI
+from db import SessionLocal, engine
 
 import crud, models, schemas, auth
 from routers import item, token, user
-
-
-
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(user.router)
 app.include_router(item.router)
 app.include_router(token.router)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 
 @app.get("/me", response_model=schemas.User)
