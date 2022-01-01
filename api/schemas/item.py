@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -21,28 +21,3 @@ class Item(ItemBase):
         # id = data["id"] で読み込めなかった場合に id = data.id でリトライする
         # 例えばuser.itemsのようにリレーションで遅延評価されるプロパティでも利用できる
         orm_mode = True  
-
-
-class UserBase(BaseModel):
-    """Userの参照・作成で共通して必要になるメンバを定義したスキーマ"""
-    email: str
-
-class UserCreate(UserBase):
-    """User作成時に利用されるスキーマ"""
-    password: str
-
-class User(UserBase):
-    """Userの参照時や、APIからの返却データとして利用されるスキーマ"""
-    id: int
-    is_active: bool
-    items: List[Item] = []
-    
-    class Config:
-        orm_mode = True
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    email: Optional[str] = None
