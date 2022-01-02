@@ -45,7 +45,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 def get_current_user(db: Session = Depends(db.get_db), token: str = Depends(oauth2_scheme)):
-    # tokenには "/token" でリターンした access_token が格納されている
+    """JWTの署名検証を行い、subに格納されているemailからUserオブジェクトを取得する
+    引数のtokenには "/api/v1/token" でリターンした access_token が格納されている
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid authentication credentials",
