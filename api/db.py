@@ -1,17 +1,23 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = f"mysql+mysqldb://r00t:r00t1234@mido-dev02-devrds-db-back.cxh1e43zwtop.ap-northeast-1.rds.amazonaws.com/fastapi_quickstart?charset=utf8mb4"
+from api.env import get_env
+
+env = get_env()
+SQLALCHEMY_DATABASE_URL = f"{env.db_dialect}+{env.db_driver}://{env.db_user}:{env.db_password}@{env.db_host}:{env.db_port}/{env.db_name}?charset=utf8mb4"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit = False, autoflush = True, bind=engine)
 Base = declarative_base()
 
 def get_db():
-    print("create session")
+    """DBのセッションを生成する。
+    1リクエスト1セッションの想定で、 レスポンスが返却される際に自動でcloseされる。
+    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-        print("close session")

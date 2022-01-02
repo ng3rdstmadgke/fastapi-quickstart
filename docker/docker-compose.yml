@@ -1,0 +1,19 @@
+---
+version: '3.2'
+services:
+  app:
+    image: ${APP_NAME}-app:latest
+    container_name: api
+    volumes:
+      - type: bind
+        source: "${APP_PROJECT_ROOT}"
+        target: "/opt/app"
+    env_file:
+      - "${APP_ENV_PATH}"
+    network_mode: host
+  nginx:
+    image: ${APP_NAME}-nginx:latest
+    container_name: nginx
+    depends_on:
+      - app
+    network_mode: host

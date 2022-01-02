@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 from datetime import datetime, timedelta
 
@@ -7,13 +8,14 @@ from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 
+from api.env import get_env
 from api import db
 from api.models.user import User as UserModel
 from api.schemas.token import (
     TokenData as TokenDataSchema
 )
 
-SECRET_KEY = "cefd95b00b6e319a3c148bf2c93499e20da6d4ad0db4662cae950f1a64182b5e"
+SECRET_KEY = get_env().secret_key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -21,7 +23,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuthPasswordBearerインスタンスであると同時に、oauth2_scheme(some, parameters)のように呼び出し可能なので
 # Depends(oauth2_scheme)と書くことができる
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# tokenUrlにはトークンを取得するURLを指定する。(swagger UIのAuthorizeの宛先になる)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 def verify_password(plain_password, hashed_password):
     # plain_passwordをそのまま引き渡して問題ない
