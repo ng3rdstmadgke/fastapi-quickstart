@@ -3,8 +3,15 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, JWTError
+
+from api import db
+from api.models.user import User as UserModel
+from api.schemas.token import (
+    TokenData as TokenDataSchema
+)
 
 SECRET_KEY = "cefd95b00b6e319a3c148bf2c93499e20da6d4ad0db4662cae950f1a64182b5e"
 ALGORITHM = "HS256"
@@ -33,3 +40,28 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def get_current_user(db: Session = Depends(db.get_db), token: str = Depends(oauth2_scheme)):
+    # tokenには "/token" でリターンした access_token が格納されている
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid authentication credentials",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload["sub"]
+        if email is None:
+            raise credentials_exception
+        token_data = TokenDataSchema(email=email)
+    except JWTError:
+        raise credentials_exception
+    user = db.query(UserModel).filter(UserModel.email == email).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+def get_current_active_user(current_user: UserModel = Depends(get_current_user)):
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
