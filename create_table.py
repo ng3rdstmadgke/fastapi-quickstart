@@ -1,4 +1,4 @@
-from api.db import engine, Base
-from api.models import user, role, item
+from api.db.db import engine
+from api.db.base import Base
 
 Base.metadata.create_all(bind=engine)

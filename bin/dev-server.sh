@@ -44,6 +44,6 @@ cat "$ENV_PATH" > "$tmpfile"
 
 trap "rm $tmpfile" EXIT
 set -e
-export $(cat .env | grep -v -e "^ *#")
+export $(cat ${tmpfile} | grep -v -e "^ *#")
 invoke uvicorn main:app \
   --reload

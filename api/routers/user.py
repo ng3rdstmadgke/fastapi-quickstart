@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException
 
 from api import auth
-from api import db
+from api.db import db
 from api.models.user import User
 from api.schemas.user import UserSchema, UserCreateSchema
 from api.cruds import (

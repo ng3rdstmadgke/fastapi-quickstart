@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException, status
 
 from api import auth
-from api import db
+from api.db import db
 from api.models.user import User
 from api.schemas.role import RoleSchema, RoleCreateSchema
 from api.cruds import (
