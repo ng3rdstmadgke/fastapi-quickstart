@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from api.db import Base
 
@@ -9,6 +9,6 @@ class Item(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(191), index=True)
     description = Column(String(191))
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     user = relationship("User", back_populates="items")

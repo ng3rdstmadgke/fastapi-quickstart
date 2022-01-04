@@ -2,16 +2,16 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class ItemBase(BaseModel):
+class ItemSchemaBase(BaseModel):
     """Itemの参照・作成で共通して必要になるメンバを定義したスキーマ"""
     title: str
     description: Optional[str] = None
 
-class ItemCreate(ItemBase):
+class ItemCreateSchema(ItemSchemaBase):
     """Item作成時に利用されるスキーマ"""
     pass
 
-class Item(ItemBase):
+class ItemSchema(ItemSchemaBase):
     """Itemの参照時や、APIからの返却データとして利用されるスキーマ"""
     id: int
     user_id: int

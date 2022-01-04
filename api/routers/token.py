@@ -20,7 +20,7 @@ def login_for_access_token(db: Session = Depends(db.get_db), form_data: OAuth2Pa
         detail="Incorrect username or password",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    user = crud_user.get_user_by_email(db, form_data.username)
+    user = crud_user.get_user_by_name(db, form_data.username)
     if user is None:
         raise login_exception
     if not auth.verify_password(form_data.password, user.hashed_password):
@@ -28,7 +28,7 @@ def login_for_access_token(db: Session = Depends(db.get_db), form_data: OAuth2Pa
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         # JWT "sub" Claim : https://openid-foundation-japan.github.io/draft-ietf-oauth-json-web-token-11.ja.html#subDef
-        data={"sub": user.email},
+        payload={"sub": user.username},
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
