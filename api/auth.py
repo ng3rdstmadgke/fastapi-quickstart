@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 
 from api.env import get_env
-from api import db
+from api.db import db
 from api.models.user import User
 from api.schemas.token import (
     TokenDataSchema

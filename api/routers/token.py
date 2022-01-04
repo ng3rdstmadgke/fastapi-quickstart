@@ -6,7 +6,7 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api import auth
-from api import db
+from api.db import db
 from api.cruds import user as crud_user
 
 router = APIRouter()

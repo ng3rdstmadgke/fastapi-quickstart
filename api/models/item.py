@@ -1,7 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 
-from api.db import Base
+from api.db.base_class import Base
 
 class Item(Base):
     __tablename__ = "items"
