@@ -21,10 +21,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# OAuthPasswordBearerインスタンスであると同時に、oauth2_scheme(some, parameters)のように呼び出し可能なので
-# Depends(oauth2_scheme)と書くことができる
-# tokenUrlにはトークンを取得するURLを指定する。(swagger UIのAuthorizeの宛先になる)
+# OAuth2PasswordBearerのインスタンスはDependencyとして利用される
+# RequestのAuthorizationヘッダを探し、値が `Bearer {token}` 形式であることを確認し、tokenをstrで返す
+# 引数の tokenUrl には token を取得するURLを指定する。(swagger UIのAuthorizeの宛先になる)
+# もしAuthorizationヘッダがなかったり、 値の形式が異なっていた場合は、401ステータスエラー(UNAUTHORIZED)を返す。
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token_json")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """plain_passwordが正しいパスワードかを検証する
