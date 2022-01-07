@@ -8,3 +8,7 @@ class TokenSchema(BaseModel):
 
 class TokenDataSchema(BaseModel):
     username: Optional[str] = None
+
+class TokenCreateSchema(BaseModel):
+    username: str
+    password: str
