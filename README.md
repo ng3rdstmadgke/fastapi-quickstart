@@ -12,6 +12,11 @@ pip install -r requirements.txt
 
 ```bash
 cp sample.env .env
+
+vim .env
+
+# 読み込み
+export $(cat .env | grep -v -e "^ *#")
 ```
 
 ## DB作成
@@ -21,12 +26,13 @@ MYSQL_PWD=xxxxxxx mysql -u xxxxxx -h xxxxxxx
 ```
 
 ```sql
-create database xxxxxxxxx;
+CREATE DATABASE xxxxxxxxx DEFAULT CHARACTER SET utf8mb4;
 ```
 
 ## マイグレーション実行
 
 ```bash
+# 環境変数読み込み
 alembic upgrade head
 ```
 
