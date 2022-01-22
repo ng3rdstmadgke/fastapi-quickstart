@@ -14,6 +14,8 @@ from api.models.user import User
 from api.schemas.token import (
     TokenDataSchema
 )
+from api.logger import logger
+import traceback
 
 SECRET_KEY = get_env().secret_key
 ALGORITHM = "HS256"
@@ -96,12 +98,15 @@ def get_current_user(db: Session = Depends(db.get_db), token: str = Depends(oaut
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload["sub"]
         if username is None:
+            logger.info("user not exists in JWT")
             raise credentials_exception
         token_data = TokenDataSchema(username=username)
     except JWTError:
+        logger.warning(traceback.format_exc())
         raise credentials_exception
     user = db.query(User).filter(User.username == username).first()
     if user is None:
+        logger.info(f"user not exists in DB (username={username})")
         raise credentials_exception
     return user
 
@@ -134,8 +139,10 @@ def get_current_admin_user(current_user: User = Depends(get_current_user)) -> Us
         User: is_superuser = TrueのUser
     """
     if not current_user.is_active:
+        logger.info(f"user is not active (username={current_user.username})")
         raise HTTPException(status_code=400, detail="Inactive user")
     if not current_user.is_superuser:
+        logger.info(f"user is not superuser (username={current_user.username})")
         raise HTTPException(
             status_code=401,
             detail="Invalid authentication credentials",

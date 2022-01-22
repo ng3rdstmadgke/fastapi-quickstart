@@ -8,6 +8,7 @@ services:
       - type: bind
         source: "${APP_PROJECT_ROOT}"
         target: "/opt/app"
+    command: /usr/local/bin/entrypoint.sh --dev
     env_file:
       - "${APP_ENV_PATH}"
     network_mode: host
