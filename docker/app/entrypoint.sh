@@ -1,4 +1,30 @@
 #!/bin/bash
+function usage {
+cat >&2 <<EOS
+nuxtアプリ起動コマンド
+
+[usage]
+ $0 [options]
+
+[options]
+ -h | --help:
+   ヘルプを表示
+ --dev:
+   デバッグモードで起動
+EOS
+exit 1
+}
+
+MODE="prd"
+while [ "$#" != 0 ]; do
+  case $1 in
+    -h | --help      ) usage;;
+    --dev            ) MODE="dev";;
+    -* | --*         ) echo "$1 : 不正なオプションです" >&2; exit 1;;
+    *                ) args+=("$1");;
+  esac
+  shift
+done
 
 # HOST_UID=${変数名:-デフォルト値}
 HOST_UID=${LOCAL_UID:-1000}
@@ -12,4 +38,10 @@ export HOME=/home/app
 
 chown -R app:app /opt/app
 # 作成したユーザーでアプリケーションサーバーを起動
-exec su app -c "printenv; uvicorn.sh"
+if [ "$MODE" = "prd" ]; then
+  echo "npm run start"
+  exec su app -c "printenv; uvicorn.sh"
+else
+  echo "npm run dev"
+  exec su app -c "printenv; uvicorn main:app --log-config log_config.yml --reload"
+fi

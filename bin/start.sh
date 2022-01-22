@@ -44,7 +44,7 @@ done
 tmpfile="$(mktemp)"
 cat "$ENV_PATH" > "$tmpfile"
 
-trap "rm $tmpfile" EXIT
+trap "docker-compose -f docker-compose.yml down; rm $tmpfile" EXIT
 invoke export APP_PROJECT_ROOT="$PROJECT_ROOT"
 invoke export APP_ENV_PATH="$tmpfile"
 invoke export APP_NAME=$(cat ${PROJECT_ROOT}/.app_name)
