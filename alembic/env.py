@@ -25,11 +25,7 @@ target_metadata = base.Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
-from api.env import get_env
-def get_url():
-    env = get_env()
-    return f"{env.db_dialect}+{env.db_driver}://{env.db_user}:{env.db_password}@{env.db_host}:{env.db_port}/{env.db_name}?charset=utf8mb4"
+from api.db import db
 
 
 def run_migrations_offline():
@@ -44,12 +40,12 @@ def run_migrations_offline():
     script output.
 
     """
-    url = get_url()
     context.configure(
-        url=url,
+        url=db.SQLALCHEMY_DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -63,17 +59,19 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = get_url()
+    conf = config.get_section(config.config_ini_section)
+    conf["sqlalchemy.url"] = db.SQLALCHEMY_DATABASE_URL
     connectable = engine_from_config(
-        configuration,
+        conf,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
         )
 
         with context.begin_transaction():
