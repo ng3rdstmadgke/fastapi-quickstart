@@ -7,10 +7,11 @@ from api.db.base_class import Base
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8mb4','mysql_collate':'utf8mb4_bin'}
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(191), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(191), nullable=False)
+    username = Column(String(255, collation="utf8mb4_bin"), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     created = Column(DateTime, default=datetime.now, nullable=False)
