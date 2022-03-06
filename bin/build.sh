@@ -47,5 +47,6 @@ done
 [ "${#args[@]}" != 0 ] && usage
 
 set -e
-invoke docker build $OPTIONS --rm -f docker/app/Dockerfile -t "${APP_NAME}/api:${TAG}" .
+invoke docker build $OPTIONS --rm -f docker/api/Dockerfile -t "${APP_NAME}/api:${TAG}" .
 invoke docker build $OPTIONS --rm -f docker/nginx/Dockerfile -t "${APP_NAME}/nginx:${TAG}" .
+invoke docker build $OPTIONS --rm -f docker/tool/Dockerfile -t "${APP_NAME}/tool:${TAG}" .

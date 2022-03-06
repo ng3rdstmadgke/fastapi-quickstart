@@ -32,8 +32,8 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY . .
 
-COPY docker/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/api/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-COPY docker/app/uvicorn.sh /usr/local/bin/uvicorn.sh
+COPY docker/api/uvicorn.sh /usr/local/bin/uvicorn.sh
 RUN chmod +x /usr/local/bin/uvicorn.sh
 CMD ["/usr/local/bin/entrypoint.sh"]
