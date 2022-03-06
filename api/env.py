@@ -4,6 +4,10 @@ from pydantic import BaseSettings
 class Environment(BaseSettings):
     """環境変数を定義する構造体。
     """
+    app_name: str
+    stage_name: str
+    mode: str
+    aws_region: str
     db_dialect: str
     db_driver: str
     db_user: str
@@ -17,5 +21,7 @@ class Environment(BaseSettings):
 def get_env() -> Environment:
     """環境変数を読み込んでEnvironmentオブジェクトを生成する。
     Environmentオブジェクトはlru_cacheで保持されるため、何回も読み込まない
+
+    fastAPIによる環境変数の読み込み: https://fastapi.tiangolo.com/advanced/settings/#environment-variables
     """
     return Environment()
