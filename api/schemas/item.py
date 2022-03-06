@@ -1,23 +1,28 @@
 from typing import Optional
 from pydantic import BaseModel
+import enum
 
+
+class DataFormat(str, enum.Enum):
+    CSV = "CSV",
+    TSV = "TSV"
 
 class ItemSchemaBase(BaseModel):
-    """Itemの参照・作成で共通して必要になるメンバを定義したスキーマ"""
-    title: str
-    description: Optional[str] = None
-
-class ItemCreateSchema(ItemSchemaBase):
-    """Item作成時に利用されるスキーマ"""
-    pass
+    id: int
+    name: str
+    is_common: bool
+    data_format: DataFormat
 
 class ItemSchema(ItemSchemaBase):
-    """Itemの参照時や、APIからの返却データとして利用されるスキーマ"""
-    id: int
-    user_id: int
-    
+    content: str
+    owner: bool = True  # 自身で作成した辞書ファイルかどうか
     class Config:  # innerクラス Config にはpydanticの設定を定義する
         # dictではなくORMオブジェクトを渡された場合でもデータを読み込むようにする
         # id = data["id"] で読み込めなかった場合に id = data.id でリトライする
         # 例えばuser.itemsのようにリレーションで遅延評価されるプロパティでも利用できる
-        orm_mode = True  
+        orm_mode = True
+
+class ItemSchemaWithoutContent(ItemSchemaBase):
+    owner: bool = True  # 自身で作成した辞書ファイルかどうか
+    class Config:
+        orm_mode = True
