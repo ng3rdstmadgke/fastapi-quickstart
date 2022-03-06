@@ -2,12 +2,22 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import item, token, user, role
+from api.db import db
+from api.env import get_env
 
-app = FastAPI(
-    redoc_url=None, # 本番環境では表示させない
-    docs_url="/api/docs", # 本番環境では表示させない
-    openapi_url="/api/docs/openapi.json" # 本番環境では表示させない
-)
+if get_env().mode == "prd":
+    app = FastAPI(
+        redoc_url=None,
+        docs_url=None,
+        openapi_url=None,
+    )
+else:
+    # NOTE: dev環境ではAPI documentを表示
+    app = FastAPI(
+        redoc_url=None,
+        docs_url="/api/docs",
+        openapi_url="/api/docs/openapi.json"
+    )
 
 origins = [
     "http://localhost",
