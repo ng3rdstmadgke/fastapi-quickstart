@@ -1,4 +1,6 @@
+import traceback
 import logging
+from botocore import exceptions
 logger = logging.getLogger("app")
 
 def logging_warn_exception(e: Exception):

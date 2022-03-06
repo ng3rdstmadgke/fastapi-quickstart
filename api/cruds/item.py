@@ -94,7 +94,7 @@ def create(
         is_common=is_common,
         data_format=data_format,
     )
-    user.terminology_files.append(item)
+    user.items.append(item)
     db.add(user)
     db.commit()
     db.refresh(item)

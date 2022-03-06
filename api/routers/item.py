@@ -3,7 +3,6 @@ from functools import lru_cache
 from typing import List
 
 import boto3
-from botocore import exceptions
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException, Form, File, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse

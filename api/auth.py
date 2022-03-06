@@ -154,16 +154,16 @@ def get_item_admin_user(current_user: User = Depends(get_current_user)) -> User:
     Returns:
         User: ItemAdminRoleを持つユーザー
     """
-    terminology_admin_role = "ItemAdminRole"
+    item_admin_role = "ItemAdminRole"
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     if current_user.is_superuser:
         # 管理者ユーザーは無条件ですべての権限を持つ
         return current_user
-    elif has_role(current_user, terminology_admin_role):
+    elif has_role(current_user, item_admin_role):
         return current_user
     else:
-        logger.info(f"user do not have TerminologyAdminRole (username={current_user.username})")
+        logger.info(f"user do not have ItemAdminRole (username={current_user.username})")
         raise HTTPException(status_code=400, detail="Invalid authentication credentials")
 
 
