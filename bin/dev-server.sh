@@ -18,7 +18,7 @@ exit 1
 
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 PROJECT_ROOT=$(cd $(dirname $0)/..; pwd)
-APP_NAME=$(cat ${PROJECT_ROOT}/.app_name)
+APP_NAME=$(cat ${PROJECT_ROOT}/.app_name | tr '[A-Z]' '[a-z]')
 
 cd "$PROJECT_ROOT"
 source "${SCRIPT_DIR}/lib/utils.sh"

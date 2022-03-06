@@ -4,11 +4,6 @@ services:
   api:
     image: ${APP_NAME}/api:latest
     container_name: api
-    volumes:
-      - type: bind
-        source: "${API_PROJECT_ROOT}"
-        target: "/opt/app"
-    command: /usr/local/bin/entrypoint.sh --debug
     env_file:
       - "${API_ENV_PATH}"
     network_mode: host

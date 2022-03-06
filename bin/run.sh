@@ -13,6 +13,8 @@ cat >&2 <<EOS
    バックグラウンドで起動
  -e | --env-file <ENV_PATH>:
    環境変数ファイルを指定(default=.env)
+ --debug:
+   デバッグモードで起動
 EOS
 exit 1
 }
@@ -20,6 +22,7 @@ exit 1
 SCRIPT_DIR="$(cd $(dirname $0); pwd)"
 PROJECT_ROOT="$(cd ${SCRIPT_DIR}/..; pwd)"
 CONTAINER_ROOT="$(cd ${PROJECT_ROOT}/docker; pwd)"
+DEBUG=
 
 source "${SCRIPT_DIR}/lib/utils.sh"
 
@@ -31,6 +34,7 @@ while [ "$#" != 0 ]; do
     -h | --help      ) usage;;
     -d | --daemon    ) shift;OPTIONS="$OPTIONS -d";;
     -e | --env-file  ) shift;ENV_PATH="$1";;
+    --debug          ) DEBUG="1";;
     -* | --*         ) error "$1 : 不正なオプションです" ;;
     *                ) args+=("$1");;
   esac
@@ -45,9 +49,15 @@ tmpfile="$(mktemp)"
 cat "$ENV_PATH" > "$tmpfile"
 
 trap "docker-compose -f docker-compose.yml down; rm $tmpfile" EXIT
-invoke export APP_PROJECT_ROOT="$PROJECT_ROOT"
-invoke export APP_ENV_PATH="$tmpfile"
-invoke export APP_NAME=$(cat ${PROJECT_ROOT}/.app_name)
+invoke export API_PROJECT_ROOT="$PROJECT_ROOT"
+invoke export API_ENV_PATH="$tmpfile"
+invoke export APP_NAME=$(cat ${PROJECT_ROOT}/.app_name | tr '[A-Z]' '[a-z]')
 cd "$CONTAINER_ROOT"
-invoke docker-compose -f docker-compose.yml down
-invoke docker-compose -f docker-compose.yml up $OPTIONS
+
+if [ -n "$DEBUG" ]; then
+  invoke docker-compose -f docker-compose.yml down
+  invoke docker-compose -f docker-compose.yml up $OPTIONS
+else
+  invoke docker-compose -f docker-compose-prd.yml down
+  invoke docker-compose -f docker-compose-prd.yml up $OPTIONS
+fi
