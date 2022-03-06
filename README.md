@@ -1,6 +1,6 @@
 # 開発環境
 
-## インストール
+## パッケージインストール
 
 ```bash
 python -m venv .venv
@@ -22,44 +22,91 @@ export $(cat .env | grep -v -e "^ *#")
 ## DB作成
 
 ```bash
-MYSQL_PWD=xxxxxxx mysql -u xxxxxx -h xxxxxxx
-```
-
-```sql
-CREATE DATABASE xxxxxxxxx DEFAULT CHARACTER SET utf8mb4;
+MYSQL_PWD=$DB_PASSWORD mysql -u $DB_USER -h $DB_HOST -e "CREATE DATABASE $DB_NAME DEFAULT CHARACTER SET utf8mb4;"
 ```
 
 ## マイグレーション実行
 
 ```bash
 # 環境変数読み込み
-alembic upgrade head
+./bin/alembic.sh -- upgrade head
 ```
 
-## 開発サーバー起動
+
+## サーバー起動
 
 ```bash
-# port 8000でListen
-./bin/dev-server.sh -e .env
-```
-
-http://127.0.0.1:8000/api/docs
-
-
-コンテナで起動する場合
-
-```bash
-# イメージビルド
+# コンテナビルド
 ./bin/build.sh
 
-# コンテナ起動
-./bin/start.sh -e .env
+
+# 開発サーバー
+./bin/run.sh --debug -e ./.env
+
+# 本番サーバー互換モード
+./bin/run.sh -e ./.env
+
+# アクセス
+# http://127.0.0.1:8000/api/docs
+# http://127.0.0.1/api/docs
 ```
 
-- アプリサーバーに直接アクセス  
-http://127.0.0.1:8000/api/docs
-- nginx経由でアクセス  
-http://127.0.0.1:8080/api/docs
+
+# 運用
+
+## マイグレーション
+
+```bash
+# マイグレーション履歴の確認
+./bin/alembic.sh --  history -v
+
+# 最新までマイグレーション
+./bin/alembic.sh -- upgrade head
+# 次のバージョンにマイグレーション
+./bin/alembic.sh --  upgrade +1
+# 最初までロールバック
+./bin/alembic.sh --  downgrade base
+# 前のバージョンにロールバック
+./bin/alembic.sh --  downgrade -1
+# マイグレーションファイル作成
+./bin/alembic.sh -m -- revision --autogenerate -m create_initial_table
+```
+
+## mysqlログイン
+
+```bash
+./bin/mysql_login.sh
+```
+
+## manage.sh
+
+```bash
+# ヘルプ表示
+./bin/manage.sh -- help
+
+# テーブル一覧
+./bin/manage.sh -- show_table --list
+
+# テーブル表示
+./bin/manage.sh -- show_table users --limit 3
+
+# ユーザー作成
+./bin/manage.sh -- create_user midori --superuser
+
+# ユーザー削除
+./bin/manage.sh -- delete_user midori --physical
+
+# ロール作成
+./bin/manage.sh -- create_role SampleRole
+
+# ロールの紐づけ
+./bin/manage.sh -- attach_role midori SampleRole
+
+# ロールの切り離し
+./bin/manage.sh -- detach_role midori SampleRole
+```
+
+
 
 # 開発
 
@@ -85,6 +132,10 @@ fastapi-quickstart/
 | | | user.py         
 | | auth.py           # 認証関連の処理
 | | env.py            # アプリに必要な環境変数を構造体にまとめる
+| | logger.py         # ロギング用の関数
+| | secrets.py        # SecretsManager取得用関数
+| | utils.py          # 共通関数定義
+| tool/               # ./bin/manage.shから実行される運用スクリプト
 | bin/                # 運用スクリプト
 | docker/             # コンテナ環境関連ファイル
 | static/             # 静的ファイル置場。fastapiからは参照されない。nginxが直接返す。
@@ -128,10 +179,10 @@ from api.models.role import Role
 
 ```bash
 # マイグレーションスクリプト生成
-alembic revision --autogenerate -m "xxxxxxxxxxxxxxxxxxxxxx"
+./bin/alembic.sh -m -- revision --autogenerate -m "create_xxxx_table"
 
 # マイグレーション実行
-alembic upgrade head
+./bin/alembic.sh -m -- upgrade head
 ```
 
 
