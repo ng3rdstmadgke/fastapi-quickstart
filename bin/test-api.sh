@@ -47,12 +47,13 @@ while [ "$#" != 0 ]; do
   shift
 done
 
+set -e
 [ "${#args[@]}" != 0 ] && usage
 
 cd $PROJECT_ROOT
 
-#$PROJECT_ROOT/bin/alembic.sh -m -e $ENV_PATH -- downgrade base
-#$PROJECT_ROOT/bin/alembic.sh -m -e $ENV_PATH -- upgrade head
+$PROJECT_ROOT/bin/alembic.sh -m -a $ENV_PATH -- downgrade base
+$PROJECT_ROOT/bin/alembic.sh -m -a $ENV_PATH -- upgrade head
 
 docker run --rm \
   --network host \

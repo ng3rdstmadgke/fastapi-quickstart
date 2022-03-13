@@ -43,26 +43,21 @@ done
 
 [ "${#args[@]}" != 0 ] && usage
 
-
 set -e
 trap 'echo "[$BASH_SOURCE:$LINENO] - "$BASH_COMMAND" returns not zero status"' ERR
 
 APP_NAME=$(cat ${PROJECT_ROOT}/.app_name | tr '[A-Z]' '[a-z]')
+export $(cat ${PROJECT_ROOT}/test_env | grep -v -e "^ *#.*")
 cd "$CONTAINER_DIR"
-
-MYSQL_ROOT_PASSWORD=test1234
-MYSQL_USER=test
-MYSQL_PASSWORD=test1234
-MYSQL_DATABASE=fastapi_sample
 
 invoke docker run $OPTIONS \
   --rm \
   --name ${APP_NAME}-mysql \
   --network host \
-  -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-  -e MYSQL_USER=$MYSQL_USER \
-  -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
-  -e MYSQL_DATABASE=$MYSQL_DATABASE \
+  -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
+  -e MYSQL_USER=$DB_USER \
+  -e MYSQL_PASSWORD=$DB_PASSWORD \
+  -e MYSQL_DATABASE=$DB_NAME \
   "${APP_NAME}/mysql:${TAG}"
 
 if [ -n "$DAEMON" ]; then
@@ -70,10 +65,10 @@ if [ -n "$DAEMON" ]; then
     --rm \
     --network host \
     -v "${PROJECT_ROOT}:/opt/app" \
-    -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-    -e MYSQL_USER=$MYSQL_USER \
-    -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
-    -e MYSQL_DATABASE=$MYSQL_DATABASE \
+    -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
+    -e MYSQL_USER=$DB_USER \
+    -e MYSQL_PASSWORD=$DB_PASSWORD \
+    -e MYSQL_DATABASE=$DB_NAME \
     "${APP_NAME}/tool:${TAG}" \
     /opt/app/bin/lib/check_mysql_boot.sh
 fi
