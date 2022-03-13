@@ -1,12 +1,19 @@
 from functools import lru_cache
 from pydantic import BaseSettings
+import enum
+
+class Mode(str, enum.Enum):
+    PRD = "prd"
+    STG = "stg"
+    DEV = "dev"
+    TEST = "test"
 
 class Environment(BaseSettings):
     """環境変数を定義する構造体。
     """
     app_name: str
     stage_name: str
-    mode: str
+    mode: Mode
     aws_region: str
     db_dialect: str
     db_driver: str

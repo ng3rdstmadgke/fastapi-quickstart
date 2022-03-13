@@ -1,0 +1,12 @@
+APP_NAME=web-template
+STAGE_NAME=test01
+MODE=test
+AWS_REGION=ap-northeast-1
+DB_DIALECT=mysql
+DB_DRIVER=mysqldb
+DB_USER=test
+DB_PASSWORD=test1234
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=web_template
+SECRET_KEY=0123456789abcdef

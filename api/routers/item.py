@@ -120,7 +120,7 @@ async def update(
 ):
     item = crud_item.get(db, current_user.id, item_id)
     if item is None:
-        raise HTTPException(status_code=404, detail="item file not found")
+        raise HTTPException(status_code=404, detail="item not found")
 
     content = await file.read()
     try:

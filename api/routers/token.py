@@ -29,7 +29,11 @@ def login_for_access_token(db: Session = Depends(db.get_db), form_data: OAuth2Pa
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         # JWT "sub" Claim : https://openid-foundation-japan.github.io/draft-ietf-oauth-json-web-token-11.ja.html#subDef
-        payload={"sub": user.username},
+        payload={
+            "sub": user.username,
+            "scopes": [role.name for role in user.roles],
+            "is_superuser": user.is_superuser,
+        },
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

@@ -15,6 +15,15 @@ cat >&2 <<EOS
    環境変数ファイルを指定(default=.env)
  --debug:
    デバッグモードで起動
+
+[example]
+ # ローカルのmysqlで起動する
+ $(dirname $0)/run-local-mysql.sh -d
+ $(dirname $0)/alembic.sh -m -a test_env -- upgrade head
+ $(dirname $0)/manage.sh -a test_env -- create_user admin --superuser
+ $(dirname $0)/manage.sh -a test_env -- create_role ItemAdminRole
+ $(dirname $0)/manage.sh -a test_env -- attach_role admin ItemAdminRole
+ $(dirname $0)/run.sh -a test_env --debug
 EOS
 exit 1
 }
@@ -54,6 +63,7 @@ invoke export API_ENV_PATH="$tmpfile"
 invoke export APP_NAME=$(cat ${PROJECT_ROOT}/.app_name | tr '[A-Z]' '[a-z]')
 cd "$CONTAINER_ROOT"
 
+cat $API_ENV_PATH
 if [ -n "$DEBUG" ]; then
   invoke docker-compose -f docker-compose.yml down
   invoke docker-compose -f docker-compose.yml up $OPTIONS

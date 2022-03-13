@@ -58,7 +58,7 @@ def update_role(
         raise HTTPException(status_code=404, detail="Role not found")
     return crud_role.update_role(db, role_schema, role)
 
-@router.delete("/roles/{user_id}")
+@router.delete("/roles/{role_id}")
 def delete_role(
     role_id: int,
     db: Session = Depends(db.get_db),

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from api import auth
 from api.models.user import User
 from api.models.role import Role
-from api.schemas.user import UserCreateSchema
+from api.schemas.user import UserCreateSchema, UserUpdateSchema
 
 # Session API: https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
 # Query API: https://docs.sqlalchemy.org/en/14/orm/query.html#sqlalchemy.orm.Query
@@ -29,9 +29,32 @@ def create_user(db: Session, user_schema: UserCreateSchema) -> User:
     db.refresh(user)
     return user
 
-def update_user(db: Session, user_schema: UserCreateSchema, user: User) -> User:
+def create_user_if_not_exists(db: Session, user_schema: UserCreateSchema) -> User:
+    user = db.query(User).filter(User.username == user_schema.username).first()
+    if user is not None:
+        return user
+    hashed_password = auth.get_password_hash(user_schema.password)
+    user = User(
+        username=user_schema.username,
+        hashed_password=hashed_password,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+def update_user_password(db: Session, user_schema: UserCreateSchema, user: User) -> User:
     user.username = user_schema.username
     user.hashed_password = auth.get_password_hash(user_schema.password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+def update_user(db: Session, user_schema: UserUpdateSchema, user: User) -> User:
+    user.username = user_schema.username
+    user.is_superuser = user_schema.is_superuser
+    user.is_active = user_schema.is_active
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -47,4 +70,3 @@ def append_role(db: Session, user: User, role: Role) -> User:
     db.commit()
     db.refresh(user)
     return user
-    

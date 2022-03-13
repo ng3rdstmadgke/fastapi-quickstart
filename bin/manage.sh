@@ -14,6 +14,8 @@ manage.py実行コマンド
    ヘルプを表示
  -t | --tag <TAG>:
    イメージのタグを指定(default=latest)
+ -a | --api-env <ENV_PATH>:
+   apiコンテナ用の環境変数ファイルを指定(default=api/.env)
 
 [example]
   ヘルプ表示
@@ -48,10 +50,11 @@ TAG=latest
 args=()
 while [ "$#" != 0 ]; do
   case $1 in
-    -h | --help ) usage;;
-    -t | --tag  ) shift;TAG="$1";;
-    --          ) shift; args+=($@); break;;
-    -* | --*         ) error "$1 : 不正なオプションです" ;;
+    -h | --help    ) usage;;
+    -t | --tag     ) shift;TAG="$1";;
+    -a | --api-env ) shift;API_ENV_PATH="$1";;
+    --             ) shift; args+=($@); break;;
+    -* | --*       ) error "$1 : 不正なオプションです" ;;
   esac
   shift
 done
@@ -72,6 +75,7 @@ info python manage.py ${args[@]}
 docker run $OPTIONS \
   --rm \
   -ti \
+  --network host \
   --name $CONTAINER_ID  \
   --env-file "$api_env_tmp" \
   -v "${PROJECT_ROOT}:/opt/app" \

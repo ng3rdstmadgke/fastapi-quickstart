@@ -16,6 +16,8 @@ alembic実行コマンド
    イメージのタグを指定(default=latest)
  -m | --mount:
    ホスト側のソースコードを参照する
+ -a | --api-env <ENV_PATH>:
+   apiコンテナ用の環境変数ファイルを指定(default=api/.env)
 
 [example]
  マイグレーション履歴の確認
@@ -46,11 +48,12 @@ TAG=latest
 args=()
 while [ "$#" != 0 ]; do
   case $1 in
-    -h | --help  ) usage;;
-    -t | --tag   ) shift;TAG="$1";;
-    -m | --mount ) OPTIONS="$OPTIONS -v "${PROJECT_ROOT}:/opt/app"";;
-    --           ) shift; args+=($@); break;; 
-    -* | --*     ) error "$1 : 不正なオプションです" ;;
+    -h | --help    ) usage;;
+    -t | --tag     ) shift;TAG="$1";;
+    -a | --api-env ) shift;API_ENV_PATH="$1";;
+    -m | --mount   ) OPTIONS="$OPTIONS -v "${API_DIR}:/opt/app"";;
+    --             ) shift; args+=($@); break;; 
+    -* | --*       ) error "$1 : 不正なオプションです" ;;
   esac
   shift
 done
@@ -71,6 +74,7 @@ info alembic ${args[@]}
 
 docker run $OPTIONS \
   --rm \
+  --network host \
   --name $CONTAINER_ID  \
   --env-file "$api_env_tmp" \
   "${APP_NAME}/api:${TAG}" \

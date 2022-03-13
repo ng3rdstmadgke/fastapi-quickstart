@@ -12,12 +12,16 @@ class UserCreateSchema(UserSchemaBase):
     """User作成時に利用されるスキーマ"""
     password: str
 
+class UserUpdateSchema(UserSchemaBase):
+    is_superuser: bool
+    is_active: bool
+
 class UserSchema(UserSchemaBase):
     """Userの参照時や、APIからの返却データとして利用されるスキーマ"""
     id: int
     is_superuser: bool
     is_active: bool
-    items: List[ItemSchema] = []
+    #items: List[ItemSchema] = []
     roles: List[RoleSchema] = []
     
     class Config:
