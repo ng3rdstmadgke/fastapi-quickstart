@@ -11,8 +11,8 @@ cat >&2 <<EOS
    ヘルプを表示
  -d | --daemon:
    バックグラウンドで起動
- -e | --env-file <ENV_PATH>:
-   環境変数ファイルを指定(default=.env)
+ -a | --api-env <ENV_PATH>:
+   apiコンテナ用の環境変数ファイルを指定(default=api/.env)
  --debug:
    デバッグモードで起動
 
@@ -36,13 +36,13 @@ DEBUG=
 source "${SCRIPT_DIR}/lib/utils.sh"
 
 OPTIONS=
-ENV_PATH="${PROJECT_ROOT}/.env"
+API_ENV_PATH="${PROJECT_ROOT}/.env"
 args=()
 while [ "$#" != 0 ]; do
   case $1 in
     -h | --help      ) usage;;
     -d | --daemon    ) shift;OPTIONS="$OPTIONS -d";;
-    -e | --env-file  ) shift;ENV_PATH="$1";;
+    -a | --api-env   ) shift;API_ENV_PATH="$1";;
     --debug          ) DEBUG="1";;
     -* | --*         ) error "$1 : 不正なオプションです" ;;
     *                ) args+=("$1");;
@@ -51,15 +51,15 @@ while [ "$#" != 0 ]; do
 done
 
 [ "${#args[@]}" != 0 ] && usage
-[ -z "$ENV_PATH" ] && error "-e | --env-file で環境変数ファイルを指定してください"
-[ -r "$ENV_PATH" -a -f "$ENV_PATH" ] || error "環境変数ファイルを読み込めません: $ENV_PATH"
+[ -z "$API_ENV_PATH" ] && error "-a | --api-env でapiコンテナ用の環境変数ファイルを指定してください"
+[ -r "$API_ENV_PATH" -a -f "$API_ENV_PATH" ] || error "apiコンテナ用の環境変数ファイルを読み込めません: $API_ENV_PATH"
 
-tmpfile="$(mktemp)"
-cat "$ENV_PATH" > "$tmpfile"
+api_env_tmp="$(mktemp)"
+cat "$API_ENV_PATH" > "$api_env_tmp"
 
-trap "docker-compose -f docker-compose.yml down; rm $tmpfile" EXIT
+trap "docker-compose -f docker-compose.yml down; rm $api_env_tmp" EXIT
 invoke export API_PROJECT_ROOT="$PROJECT_ROOT"
-invoke export API_ENV_PATH="$tmpfile"
+invoke export API_ENV_PATH="$api_env_tmp"
 invoke export APP_NAME=$(cat ${PROJECT_ROOT}/.app_name | tr '[A-Z]' '[a-z]')
 cd "$CONTAINER_ROOT"
 

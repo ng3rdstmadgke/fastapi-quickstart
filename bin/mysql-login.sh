@@ -51,6 +51,7 @@ trap 'rm $env_tmp; echo "[$BASH_SOURCE:$LINENO] - "$BASH_COMMAND" returns not ze
 
 CONTAINER_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n1)
 docker run --rm -ti \
+  --network host \
   --name ${CONTAINER_ID} \
   --env-file "$env_tmp" \
   -v "${PROJECT_ROOT}:/opt/app" \

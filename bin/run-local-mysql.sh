@@ -53,7 +53,7 @@ cd "$CONTAINER_DIR"
 MYSQL_ROOT_PASSWORD=test1234
 MYSQL_USER=test
 MYSQL_PASSWORD=test1234
-MYSQL_DATABASE=web_template
+MYSQL_DATABASE=fastapi_sample
 
 invoke docker run $OPTIONS \
   --rm \
